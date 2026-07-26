@@ -1,10 +1,11 @@
 """FastAPI application for an in-memory task API."""
 
+from copy import deepcopy
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, Query, status
 
-from models import Task, TaskCreate, TaskUpdate
+from models import ResetResponse, Task, TaskCreate, TaskStats, TaskUpdate
 
 
 app = FastAPI(
@@ -15,11 +16,13 @@ app = FastAPI(
 
 
 # In-memory storage only. Data is lost whenever the server restarts.
-tasks: List[Task] = [
+ORIGINAL_TASKS: List[Task] = [
     Task(id=1, title="Learn FastAPI", done=False),
     Task(id=2, title="Build a simple API", done=False),
     Task(id=3, title="Test the endpoints", done=True),
 ]
+
+tasks: List[Task] = deepcopy(ORIGINAL_TASKS)
 
 
 def get_task_by_id(task_id: int) -> Optional[Task]:
@@ -37,6 +40,69 @@ def get_next_task_id() -> int:
     if not tasks:
         return 1
     return max(task.id for task in tasks) + 1
+
+
+def get_filtered_tasks(
+    done: Optional[bool] = None,
+    search: Optional[str] = None,
+    limit: Optional[int] = None,
+    offset: int = 0,
+) -> List[Task]:
+    """Return tasks after applying filter, search, and pagination rules."""
+
+    filtered_tasks = tasks
+
+    if done is not None:
+        filtered_tasks = [task for task in filtered_tasks if task.done == done]
+
+    if search is not None:
+        search_term = search.strip().lower()
+        filtered_tasks = [
+            task for task in filtered_tasks if search_term in task.title.lower()
+        ]
+
+    if offset:
+        filtered_tasks = filtered_tasks[offset:]
+
+    if limit is not None:
+        filtered_tasks = filtered_tasks[:limit]
+
+    return filtered_tasks
+
+
+def validate_pagination(limit: Optional[int], offset: int) -> None:
+    """Validate pagination query parameters."""
+
+    if limit is not None and limit <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "Limit must be positive"},
+        )
+
+    if offset < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "Offset must be greater than or equal to 0"},
+        )
+
+
+def reset_task_list() -> List[Task]:
+    """Restore the in-memory task list to the original example tasks."""
+
+    global tasks
+    tasks = deepcopy(ORIGINAL_TASKS)
+    return tasks
+
+
+def get_task_statistics() -> TaskStats:
+    """Return aggregate information about the current task list."""
+
+    completed_tasks = sum(1 for task in tasks if task.done)
+    return TaskStats(
+        total=len(tasks),
+        done=completed_tasks,
+        open=len(tasks) - completed_tasks,
+    )
 
 
 def validate_title(title: Optional[str]) -> str:
@@ -86,12 +152,55 @@ def health_check() -> dict:
     "/tasks",
     response_model=List[Task],
     summary="List tasks",
-    description="Return every task currently stored in memory.",
+    description=(
+        "Return tasks from memory with optional filtering, search, and "
+        "pagination."
+    ),
 )
-def list_tasks() -> List[Task]:
+def list_tasks(
+    done: Optional[bool] = Query(
+        default=None,
+        description="Filter tasks by completion status.",
+    ),
+    search: Optional[str] = Query(
+        default=None,
+        description="Case-insensitive search term for task titles.",
+    ),
+    limit: Optional[int] = Query(default=None, description="Maximum tasks to return"),
+    offset: int = Query(default=0, description="Number of tasks to skip"),
+) -> List[Task]:
     """Return the full list of tasks."""
 
-    return tasks
+    validate_pagination(limit=limit, offset=offset)
+    return get_filtered_tasks(done=done, search=search, limit=limit, offset=offset)
+
+
+@app.get(
+    "/stats",
+    response_model=TaskStats,
+    summary="Task statistics",
+    description="Return total, completed, and open task counts.",
+)
+def task_stats() -> TaskStats:
+    """Return statistics for the current in-memory tasks."""
+
+    return get_task_statistics()
+
+
+@app.post(
+    "/reset",
+    response_model=ResetResponse,
+    summary="Reset tasks",
+    description="Restore the original example tasks and remove all changes.",
+)
+def reset_tasks() -> ResetResponse:
+    """Reset the task list back to the original three example tasks."""
+
+    restored_tasks = reset_task_list()
+    return ResetResponse(
+        message="Tasks reset successfully",
+        tasks=restored_tasks,
+    )
 
 
 @app.get(

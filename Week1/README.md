@@ -31,10 +31,52 @@ http://localhost:8000/docs
 | GET | / | API information |
 | GET | /health | Health check |
 | GET | /tasks | List all tasks |
+| GET | /stats | Task statistics |
+| POST | /reset | Reset tasks to the original examples |
 | GET | /tasks/{id} | Get one task |
 | POST | /tasks | Create a task |
 | PUT | /tasks/{id} | Update a task |
 | DELETE | /tasks/{id} | Delete a task |
+
+## Filtering
+
+Use `done=true` or `done=false` to filter tasks by completion status.
+
+```bash
+curl "http://localhost:8000/tasks?done=true"
+```
+
+## Search
+
+Search task titles with the `search` query parameter.
+
+```bash
+curl "http://localhost:8000/tasks?search=milk"
+```
+
+## Statistics
+
+Get the current task totals with `/stats`.
+
+```bash
+curl http://localhost:8000/stats
+```
+
+## Reset
+
+Restore the original three example tasks with `/reset`.
+
+```bash
+curl -X POST http://localhost:8000/reset
+```
+
+## Pagination
+
+Use `limit` and `offset` together with filtering and search.
+
+```bash
+curl "http://localhost:8000/tasks?limit=2&offset=0"
+```
 
 ## Example curl commands
 
@@ -54,6 +96,48 @@ curl http://localhost:8000/health
 
 ```bash
 curl http://localhost:8000/tasks
+```
+
+### GET /tasks?done=true
+
+```bash
+curl "http://localhost:8000/tasks?done=true"
+```
+
+### GET /tasks?done=false
+
+```bash
+curl "http://localhost:8000/tasks?done=false"
+```
+
+### GET /tasks?search=milk
+
+```bash
+curl "http://localhost:8000/tasks?search=milk"
+```
+
+### GET /tasks?done=true&search=project
+
+```bash
+curl "http://localhost:8000/tasks?done=true&search=project"
+```
+
+### GET /tasks?limit=2
+
+```bash
+curl "http://localhost:8000/tasks?limit=2"
+```
+
+### GET /tasks?offset=2
+
+```bash
+curl "http://localhost:8000/tasks?offset=2"
+```
+
+### GET /tasks?limit=2&offset=2
+
+```bash
+curl "http://localhost:8000/tasks?limit=2&offset=2"
 ```
 
 ### GET /tasks/{id}
@@ -82,4 +166,16 @@ curl -X PUT http://localhost:8000/tasks/1 \
 
 ```bash
 curl -X DELETE http://localhost:8000/tasks/1
+```
+
+### GET /stats
+
+```bash
+curl http://localhost:8000/stats
+```
+
+### POST /reset
+
+```bash
+curl -X POST http://localhost:8000/reset
 ```

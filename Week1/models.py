@@ -24,3 +24,18 @@ class TaskUpdate(BaseModel):
 
     title: Optional[str] = None
     done: Optional[bool] = None
+
+
+class TaskStats(BaseModel):
+    """Response model for task statistics."""
+
+    total: int
+    done: int
+    open: int
+
+
+class ResetResponse(BaseModel):
+    """Response model for resetting the task list."""
+
+    message: str
+    tasks: list[Task]
