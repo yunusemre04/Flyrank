@@ -1,4 +1,4 @@
-# FlyRank Backend Internship
+# FlyRank Internship
 
 This repository contains my work completed during the **FlyRank Backend Internship**.
 
