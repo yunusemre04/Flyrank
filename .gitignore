@@ -1,2 +1,4 @@
 .vscode
 __pycache__/
+.env
+Week2_Task_2/.env
