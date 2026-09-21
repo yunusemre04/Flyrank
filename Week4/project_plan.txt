@@ -1,0 +1,160 @@
+Goal
+Build a secure API that handles user authentication (Sign Up, Log In, and Log Out) and protects specific routes. You will use Supabase Auth to manage user accounts, issue secure JSON Web Tokens (JWTs), and verify those tokens to protect "admin-only" or "user-only" API endpoints. You will test and document this flow in Swagger UI and publish your code to GitHub.
+Purpose
+In previous assignments, your API was wide open, anyone who knew the URL could read, create, or delete data. In the real world, APIs must be secured. A social network only lets you edit your posts, a shop only lets logged-in users view their cart, FlyRank only lets authenticated users view SEO audits. This assignment introduces you to modern web security. Instead of writing cryptography or password-hashing algorithms from scratch (which is highly discouraged in production), you will use Supabase as your Identity Provider (IdP).By the end of this assignment, you will understand how a client logs in, receives a secure pass (a token), and presents that pass to your server to access protected doors.
+The big idea in 60 seconds
+Secure authentication relies on a trust triangle: the Client, your Backend Server, and the Identity Provider (Supabase).
+Sign Up / Log In: The client sends credentials (email and password) directly to Supabase.
+The Token: Supabase validates the credentials and returns a JWT (Access Token) .
+The Request: The client sends a request to your backend server, attaching the JWT inside an Authorization Header
+Verification: Your backend server decodes and verifies the JWT. If the token is valid, your server opens the protected door and sends the response.
+Here is the API route structure you will build:
+
+POST /auth/signup
+
+Purpose: Create a new user account Request Body: { "email": "...", "password": "..." }
+
+POST /auth/login
+
+Purpose: Authenticate user & return JWT Request Body: { "email": "...", "password": "..." }
+
+POST /auth/logout
+
+Purpose: Terminate the user session Header: Authorization: Bearer <token>
+
+GET /protected/profile
+
+Purpose: Read private user profile data Header: Authorization: Bearer <token>
+
+GET /public/info
+
+Purpose: Read public, unprotected data Header: none
+
+Tools — pick ONE lane
+Both lanes build exactly the same secure API. Pick the language you want to stick with; don't switch mid-assignment.
+🟨 JavaScript lane
+Node.js (nodejs.org)
+Next.js
+@supabase/supabase-js
+swagger-ui
+Git/Github
+🐍 Python lane
+Python 3.10+ (python.org)
+FastAPI
+supabase (PyPi package)
+Built-in at /docs
+Git/Github
+The task — six stages (+ one bonus)
+Work stage by stage, in order. Commit to Git after every stage (for ≥6 commits).
+Stage 0 — Setup Supabase & Server (~45 min)
+The scene: before you can guard a castle, you need to build the guard tower.
+Create a free account at supabase.com(opens in a new tab) and spin up a new project (name it whatever you like, e.g., "Auth-Practice").
+Find your Project URL and Anon Key in your Supabase Dashboard under Project Settings -> API
+Initialize your project locally. Create a .env file to securely store these variables: Code snippet:
+SUPABASE_URL=your_project_url SUPABASE_KEY=your_anon_key PORT=3000
+
+Install your dependencies (Next.js + Supabase SDK).
+
+Initialize the Supabase client in your code using those environment variables. Make sure your server starts on the appropriate port.
+
+Checkpoint: Run your server. It should log "Server running and connected to Supabase" without throwing errors.
+
+Commit: Stage 0: setup server and supabase client
+
+Stage 1 — Open Auth: Sign Up & Log In (~1 h)
+*The front gates are open. Let users register their keys.*1. Create a POST /auth/signup route.
+Expects a JSON body containing email and password .
+
+Use the Supabase SDK's signUp method ( supabase.auth.signUp() ) to register the user.
+
+Input validation: If email or password is missing, return status 400 ("Bad Request") with a JSON error.
+
+On success, return status 201 ("Created") with the user object returned by Supabase.1.
+
+Create a POST /auth/login route.
+
+Use the Supabase SDK's signIn method ( supabase.auth.signInWithPassword() ).
+
+Input validation: If fields are empty, return 400 . If Supabase returns an auth error (e.g., wrong password), return status 401 ("Unauthorized") with { "error": "Invalid login credentials" } .
+
+On success, return status 200 ("OK") along with the Access Token (JWT) and Refresh Token provided by Supabase.-
+
+Checkpoint: Use curl to register a new account, then log in with it:
+
+Bash curl -i -X POST [http://localhost:3000/auth/signup](http://localhost:3000/auth/signup) -H "Content-Type: application/json" -d '{"email":"test@example.com", "password":"password123"}'
+
+Confirm it returns 201 . Then log in and verify you receive an "access_token" string back.-
+
+Commit: Stage 1: signup and login routes working
+
+Stage 2 — The Public & Protected Gates (~1 h)
+Creating a secure sanctuary inside your API.
+Add a public endpoint: GET /public/info . It requires no authentication and returns { "message": "Welcome stranger! This info is public." } with status 200 .
+Add a protected endpoint: GET /protected/profile .- To access this, the client must send their Access Token in the request headers under: Authorization: Bearer <token_here>
+Inside this route, extract the token from the header.
+If the header is missing, incorrectly formatted, or has no token, immediately return status 401 ("Unauthorized") with { "error": "Access token required" }
+Checkpoint: curl -i http://localhost:3000/public/info returns 200 .
+
+curl -i http://localhost:3000/protected/profile returns 401
+
+Commit: Stage 2: public route and unverified protected route
+
+Stage 3 — The Guard: Token Verification (~1 h)
+*The guard at the door inspects the visitor's pass.*Now you will make GET /protected/profile actually verify that token with Supabase.
+Extract the token from the header on GET /protected/profile .
+Call the Supabase SDK's user retrieval method ( supabase.auth.getUser(token) ) to verify the token's validity.
+If Supabase determines the token is expired, tampered with, or invalid -> Return status 401 with { "error": "Invalid or expired token" } .
+If the token is verified successfully:- Return status 200 along with the user's secure metadata (e.g., ID, Email, and when the account was created).
+Checkpoint: Log in via POST /auth/login and copy the "access_token" value. Run a curl command passing that token:
+
+Bash curl -i [http://localhost:3000/protected/profile](http://localhost:3000/protected/profile) -H "Authorization: Bearer <PASTE_YOUR_ACCESS_TOKEN_HERE>"
+
+It should return status 200 and your user details. Changing one character of the token and running it again should return 401 Commit: Stage 3: profile route token verification
+
+Stage 4 — Middleware Protection & Logout (~1.5 h)
+*Scaling your security and leaving the premises.*1. Middleware Guard: Writing token-checking logic inside every single protected endpoint gets messy. Extract your token-checking logic into a reusable Middleware function (Express) or Dependency (FastAPI).- Apply this middleware/dependency to GET /protected/profile so the route logic itself only runs after the middleware verifies the user.1. Create POST /auth/logout .- This is a protected route (uses your new middleware).
+Call the Supabase SDK sign out method ( supabase.auth.signOut(token) ).
+Return status 204 ("No Content") upon successful logout.
+Checkpoint: Create a second protected route, like GET /protected/dashboard , using your new middleware. Confirm it automatically rejects invalid tokens and permits valid ones.
+
+Commit: Stage 4: auth middleware and logout endpoint
+
+Stage 5 — See it: Swagger UI (~1–1.5 h)
+visualizing the secure doors
+Swagger UI needs to be told that your API has locked doors.
+
+🐍 Python lane: FastAPI automatically generates your Swagger UI at http://localhost:8000/docs . To make the "Authorize" padlock button appear, configure FastAPI's HTTPBearer security scheme and apply it to your protected routes.
+
+🟨 JavaScript lane: In your openapi.json file, define a securitySchemes block of type http and scheme bearer . Protect the /protected/ endpoints by linking them to this security scheme. Serve it via swagger-ui-express at /docs .
+
+Once configured, click the "Authorize" lock button in Swagger, paste your JWT, and use "Try it out" on /protected/profile directly from your browser. Checkpoint: /docs shows a lock icon next to your protected routes. You can authorize with a token and successfully test the profile endpoint. Take a screenshot of Swagger UI showing your routes for your README.
+
+Commit: Stage 5: Swagger UI documentation with bearer auth
+
+Stage 6 — Publish to GitHub (~1 h)
+Never share your secrets.
+Create a public GitHub repository.
+CRITICAL: Ensure your .env file is listed in your .gitignore . NEVER commit your Supabase keys or secrets to GitHub.
+Push your repository to GitHub.
+Write a professional README detailing:- What this project is.
+How to set up local environment variables.
+How to run it.
+An API reference table outlining the endpoints and whether they require auth.
+Your Swagger UI screenshot.-
+Checkpoint: A peer can clone your repository, plug in their own .env values, and run your authenticated API in under 5 minutes.
+
+Commit: Stage 6: publish to GitHub and write README
+
+★ Stage 7 — Bonus: The AI Rematch (Optional ~1 h)
+Now that you've secured an API by hand, prompt an AI assistant to build the exact same setup.
+Write a prompt from memory specifying: frameworks, Supabase auth integration, the routes, status codes ( 401 vs 400 vs 201 ), token verification via middleware, and Swagger UI.
+Generate the code, run it in a separate folder, and test your Stage 3 and 4 checkpoints against it.
+Write an "AI vs Me" section in your README analyzing:- How it handled token extraction (did it handle the "Bearer " prefix parsing correctly?).
+Security flaws it might have introduced (did it safely handle invalid tokens?).
+What your prompt missed and what the AI assumed.
+Requirements Checklist
+[ ] Server starts on localhost with a single documented terminal command.
+[ ] .env file is properly used and .gitignore prevents it from being pushed to GitHub. [ ] POST /auth/signup and POST /auth/login communicate successfully with Supabase Auth. [ ] GET /protected/profile extracts and verifies the bearer token from the HTTP Authorization header. [ ] Proper status codes used: 201 on signup, 200 on successful login/read, 204 on logout, 400 on missing inputs, and 401 on missing, incorrect, or expired tokens. [ ] Auth check extracted into reusable middleware/dependencies. [ ] Swagger UI configured at /docs with Bearer Token Authorization fully functional. [ ] Public GitHub repo with ≥6 clean commits and a comprehensive README.
+
+Glossary
+WordWhat it means**Identity Provider (IdP)**An external service (like Supabase, Auth0, or Firebase) that manages user accounts, passwords, and security tokens so your server doesn't have to.**JSON Web Token (JWT)**A compact, URL-safe secure string used to transfer claims (like "this is User ID 123") between two parties. It is cryptographically signed so it cannot be tampered with.Bearer TokenA security token given to the client. The server grants access to anyone who "bears" (presents) this token, usually in the format: Authorization: Bearer <token>.Authorization HeaderA standard HTTP header used by clients to send credentials/tokens to a server (e.g. Authorization: Bearer eyJhbGciOi...).**Authentication (AuthN)**The process of verifying who a user is (e.g., matching email & password).**Authorization (AuthZ)**The process of verifying what a user is allowed to do (e.g., checking if an authenticated user has permission to view a page).MiddlewareA function in web frameworks that intercepts incoming requests before they reach your main route handler. Excellent for checking if a user is logged in.Environment VariablesConfiguration settings stored outside of your source code (typically in a .env file) used to keep private API credentials and database keys safe.Refresh TokenA special long-lived token used to obtain a new Access Token (JWT) once the current one expires, without forcing the user to log in again.
