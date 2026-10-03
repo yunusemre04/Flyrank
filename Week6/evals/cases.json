@@ -1,0 +1,90 @@
+[
+  {
+    "id": "sharp-objects",
+    "input": {
+      "title": "Sharp Objects",
+      "description": "WICKED above her hipbone, GIRL across her heart. Words are like a road map to reporter Camille Preaker's troubled past. Fresh from a brief stay at a psych hospital, Camille's first assignment brings her reluctantly back to her hometown to cover the murders of two preteen girls. With its taut, crafted writing, Sharp Objects is addictive, haunting, and unforgettable.",
+      "price_gbp": 47.82,
+      "rating_text": "Four",
+      "availability_text": "In stock (20 available)"
+    },
+    "expected_category": "fiction"
+  },
+  {
+    "id": "sapiens",
+    "input": {
+      "title": "Sapiens: A Brief History of Humankind",
+      "description": "From a renowned historian comes a groundbreaking narrative of humanity's creation and evolution that explores the ways in which biology and history have defined us. One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one.",
+      "price_gbp": 54.23,
+      "rating_text": "Five",
+      "availability_text": "In stock (20 available)"
+    },
+    "expected_category": "nonfiction"
+  },
+  {
+    "id": "boys-in-the-boat",
+    "input": {
+      "title": "The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics",
+      "description": "The dramatic true story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics. Daniel James Brown tells the story of the University of Washington's 1936 eight-oar crew, drawing on the boys' own diaries and journals.",
+      "price_gbp": 22.60,
+      "rating_text": "Four",
+      "availability_text": "In stock (19 available)"
+    },
+    "expected_category": "nonfiction"
+  },
+  {
+    "id": "black-maria",
+    "input": {
+      "title": "The Black Maria",
+      "description": "Taking its name from the moon's dark plains, misidentified as seas by early astronomers, the black maria investigates African diasporic histories, the consequences of racism within American culture, and the question of human identity. Aracelis Girmay's newest poetry collection elegizes and celebrates life.",
+      "price_gbp": 52.15,
+      "rating_text": "One",
+      "availability_text": "In stock (19 available)"
+    },
+    "expected_category": "poetry"
+  },
+  {
+    "id": "shakespeares-sonnets",
+    "input": {
+      "title": "Shakespeare's Sonnets",
+      "description": "This book is an important and complete collection of the Sonnets of William Shakespeare. Most readers are aware of the great plays written for the stage, but are unaware of the magnificent Sonnets which were written around the same period.",
+      "price_gbp": 20.66,
+      "rating_text": "Four",
+      "availability_text": "In stock (19 available)"
+    },
+    "expected_category": "poetry"
+  },
+  {
+    "id": "olio",
+    "input": {
+      "title": "Olio",
+      "description": "Part fact, part fiction, Tyehimba Jess's much anticipated second book weaves sonnet, song, and narrative to examine the lives of mostly unrecorded African American performers directly before and after the Civil War up to World War I.",
+      "price_gbp": 23.88,
+      "rating_text": "One",
+      "availability_text": "In stock (19 available)"
+    },
+    "expected_category": "poetry"
+  },
+  {
+    "id": "foolproof-preserving",
+    "input": {
+      "title": "Foolproof Preserving: A Guide to Small Batch Jams, Jellies, Pickles, Condiments, and More",
+      "description": "Canning perfected the America's Test Kitchen way. This detailed guide to home preserving is perfect for novice canners and experts alike and offers more than 100 foolproof recipes, with detailed tutorials, troubleshooting tips, equipment information, and insight into the science behind canning.",
+      "price_gbp": 30.52,
+      "rating_text": "Three",
+      "availability_text": "In stock (19 available)"
+    },
+    "expected_category": "nonfiction"
+  },
+  {
+    "id": "ambiguous-no-description",
+    "input": {
+      "title": "Mystery Notes",
+      "description": null,
+      "price_gbp": 12.50,
+      "rating_text": "Two",
+      "availability_text": "In stock (3 available)"
+    },
+    "expected_category": "other"
+  }
+]
