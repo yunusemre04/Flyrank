@@ -1,0 +1,3 @@
+inngest
+fastapi
+uvicorn
