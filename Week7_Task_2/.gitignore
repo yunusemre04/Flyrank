@@ -1,0 +1,6 @@
+reports/
+report.db
+__pycache__/
+.venv/
+*.pyc
+my-report.pdf

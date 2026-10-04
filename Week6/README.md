@@ -89,15 +89,7 @@ Groq, etc.) is exactly three environment variables — nothing in the code chang
   `logs/quarantine.jsonl` with the input, the raw model output, and the error, and the endpoint returns a
   clean `422`. It never crashes and never returns raw model text to the caller.
 
-## Changes made while finishing the assignment
-
-- Retry policy tightened: retries only on timeouts, connection errors, `429` (honouring `Retry-After`) and `5xx`; all other `4xx` fail immediately. Exhausted timeouts return `504`, other exhausted failures `502`.
-- The first call's token usage is now logged even when a repair retry follows.
-- The prompt file is loaded from `PROMPT_VERSION` instead of a hard-coded path.
-- `.gitignore` added for `logs/*.jsonl` and `__pycache__/`.
-- Eval run against the live model: 8/8 (see below).
-
-## Eval
+retry ## Eval
 
 `evals/cases.json` has 8 hand-labelled book records (7 real records from the Week5 scrape, 1 synthetic
 record with no description to exercise the "when unsure" rule). Run it with:
@@ -118,12 +110,6 @@ One real call (from the server log):
 {"event": "llm_call", "prompt_version": "v1", "model": "openrouter/free", "input_tokens": 822, "output_tokens": 776, "duration_ms": 2404, "repaired": false}
 ```
 
-Across 16 logged calls: input averaged ~810 tokens (very stable — the fixed system prompt dominates), output averaged ~850 tokens (range 52–2153) and duration ranged from 1.6 s to 239 s. The JSON answer itself is only ~60 tokens, so the large output counts are almost certainly the free router picking models that emit hidden reasoning tokens. At 10,000 requests/day that is roughly 8.1M input + 8.5M output tokens/day. It is free on `openrouter/free`, but on a paid model the **output** side is the bigger driver here, and a non-reasoning model (or a `max_tokens` cap) would cut it sharply.
+Across 16 logged calls: input averaged ~810 tokens (very stable — the fixed system prompt dominates), output averaged ~850 tokens (range 52–2153) and duration ranged from 1.6 s to 239 s. The JSON answer itself is only ~60 tokens, so the large output counts are almost certainly the free router picking models that emit hidden reasoning tokens. At 10,000 requests/day that is roughly 8.1M input + 8.5M output tokens/day. It is free on `openrouter/free`, but on a paid model the **output** side is the bigger driver here, and a non-reasoning model (or a `max_tokens` cap) would cut it sharply. The free tier would not sustain this volume anyway (50 requests/day).
 
-## What I'd fix with another day
 
-The 30 s client timeout is per-read, not total: one call logged 239 s, so a slow-but-trickling response can outlive it. I'd add a hard overall deadline and a `max_tokens` cap. The system prompt is sent in full on every call, including the fixed instructions and examples — an
-easy win would be provider-side prompt caching (see the OpenAI/Anthropic caching docs) or trimming the
-few-shot examples once the eval shows the model doesn't need them anymore. I'd also like a bigger eval
-set (25 cases, split easy/hard) before trusting the category numbers on anything beyond books.toscrape.com
-data.
