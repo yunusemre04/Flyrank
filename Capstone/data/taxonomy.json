@@ -1,0 +1,129 @@
+{
+  "subjects": [
+    {
+      "name": "red fox",
+      "category": "animal",
+      "aliases": [
+        "fox",
+        "vulpes vulpes",
+        "vulpes"
+      ]
+    },
+    {
+      "name": "gray wolf",
+      "category": "animal",
+      "aliases": [
+        "wolf",
+        "wolves",
+        "canis lupus",
+        "grey wolf"
+      ]
+    },
+    {
+      "name": "dog",
+      "category": "animal",
+      "aliases": [
+        "puppy",
+        "puppies",
+        "canis familiaris",
+        "canine pet"
+      ]
+    },
+    {
+      "name": "brown bear",
+      "category": "animal",
+      "aliases": [
+        "bear",
+        "ursus arctos",
+        "grizzly"
+      ]
+    },
+    {
+      "name": "deer",
+      "category": "animal",
+      "aliases": [
+        "stag",
+        "doe",
+        "cervidae",
+        "red deer"
+      ]
+    },
+    {
+      "name": "vintage car",
+      "category": "vehicle",
+      "aliases": [
+        "classic car",
+        "antique car",
+        "old car"
+      ]
+    },
+    {
+      "name": "bicycle",
+      "category": "vehicle",
+      "aliases": [
+        "bike",
+        "cycling"
+      ]
+    },
+    {
+      "name": "sailboat",
+      "category": "vehicle",
+      "aliases": [
+        "sailing",
+        "yacht"
+      ]
+    },
+    {
+      "name": "pizza",
+      "category": "food",
+      "aliases": [
+        "margherita"
+      ]
+    },
+    {
+      "name": "sushi",
+      "category": "food",
+      "aliases": [
+        "nigiri",
+        "maki"
+      ]
+    },
+    {
+      "name": "coffee",
+      "category": "food",
+      "aliases": [
+        "espresso",
+        "latte"
+      ]
+    },
+    {
+      "name": "eiffel tower",
+      "category": "landmark",
+      "aliases": [
+        "tour eiffel"
+      ]
+    },
+    {
+      "name": "golden gate bridge",
+      "category": "landmark",
+      "aliases": [
+        "golden gate"
+      ]
+    },
+    {
+      "name": "sunflower",
+      "category": "plant",
+      "aliases": [
+        "helianthus"
+      ]
+    },
+    {
+      "name": "cactus",
+      "category": "plant",
+      "aliases": [
+        "cacti",
+        "succulent"
+      ]
+    }
+  ]
+}

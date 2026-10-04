@@ -1,0 +1,100 @@
+[
+  {
+    "post": "red-fox-behavior",
+    "correct_images": [
+      "red-fox_*.jpg"
+    ]
+  },
+  {
+    "post": "vulpes-field-notes",
+    "correct_images": [
+      "red-fox_*.jpg"
+    ]
+  },
+  {
+    "post": "gray-wolf-packs",
+    "correct_images": [
+      "gray-wolf_*.jpg"
+    ]
+  },
+  {
+    "post": "puppy-training",
+    "correct_images": [
+      "dog_*.jpg"
+    ]
+  },
+  {
+    "post": "bear-salmon-run",
+    "correct_images": [
+      "brown-bear_*.jpg"
+    ]
+  },
+  {
+    "post": "deer-rut",
+    "correct_images": [
+      "deer_*.jpg"
+    ]
+  },
+  {
+    "post": "vintage-car-restoration",
+    "correct_images": [
+      "vintage-car_*.jpg"
+    ]
+  },
+  {
+    "post": "bike-commute",
+    "correct_images": [
+      "bicycle_*.jpg"
+    ]
+  },
+  {
+    "post": "sailing-basics",
+    "correct_images": [
+      "sailboat_*.jpg"
+    ]
+  },
+  {
+    "post": "pizza-dough",
+    "correct_images": [
+      "pizza_*.jpg"
+    ]
+  },
+  {
+    "post": "sushi-etiquette",
+    "correct_images": [
+      "sushi_*.jpg"
+    ]
+  },
+  {
+    "post": "eiffel-tower-history",
+    "correct_images": [
+      "eiffel-tower_*.jpg"
+    ]
+  },
+  {
+    "post": "golden-gate-fog",
+    "correct_images": [
+      "golden-gate-bridge_*.jpg"
+    ]
+  },
+  {
+    "post": "sunflower-field",
+    "correct_images": [
+      "sunflower_*.jpg"
+    ]
+  },
+  {
+    "post": "cactus-care",
+    "correct_images": [
+      "cactus_*.jpg"
+    ]
+  },
+  {
+    "post": "snow-leopard-conservation",
+    "correct_images": []
+  },
+  {
+    "post": "volcano-hiking-guide",
+    "correct_images": []
+  }
+]
