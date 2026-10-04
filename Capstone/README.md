@@ -1,26 +1,38 @@
-# flyrank-capstone-imagerelevance
+# Image Relevance Backend
 
 AI Image Understanding & Content Matching Engine: a vision model tags an image library, embeddings match images to
 posts by *meaning*, and a **mismatch guard** refuses wrong pairings (the wolf on a fox post) with a human-readable reason,
 or answers "no confident match".
-
 ## Architecture
 
+```mermaid
+flowchart TD
+    A[Images] -->|Batch job<br/>retries • cost log • budget guard| B[Vision Model]
+
+    B --> C{Pydantic Validation}
+    C -->|Invalid| D[Retry]
+    D --> B
+    C -->|Valid| E[Image Metadata<br/>+ Image Tags]
+
+    E -->|Low confidence| F[Flagged for Review]
+    E -->|embed caption + tags| G[Image Vectors]
+
+    H[Posts] -->|Same Batch Job| I[Embed title + body]
+    I --> J[Post Vectors]
+
+    J --> K[GET /posts/:id/images]
+    G --> K
+
+    K --> L[Cosine Ranking<br/>image_vectors × post_vector]
+
+    L --> M{Mismatch Guard}
+    M -->|confidence + similarity threshold<br/>+ subject/category check| N[Approved Candidate<br/>Ranked + Explained]
+    M -->|No confident match| O[No Confident Match<br/>+ Reasons]
+
+    N --> P[Review API<br/>approve / reject / inspect why]
+    O --> P
 ```
-Images --(batch job: retries, cost log, budget guard)--> Vision model --> {subject, category, attributes, caption, confidence}
-        |                                                   | validate (Pydantic)  invalid -> retry -> failed
-        |                                                   v
-        |                                          image_metadata (+ image_tags)   low confidence -> flagged
-        |                                                   | embed(caption + tags)
-        |                                                   v
-        |                                              image_vectors
-Posts --(same job)--> embed(title + body) --------------> post_vectors
-                                                              |
-GET /posts/:id/images --> cosine ranking (image_vectors x post_vector)
-                      --> MISMATCH GUARD: confidence + similarity threshold + subject/category check
-                      --> approved candidate (ranked, explained)   OR   "no confident match" + reasons
-                      --> Review API: approve / reject / inspect why
-```
+
 
 Layers: `app/models.py`, `db.py` (data) · `app/services/*`, `jobs.py` (logic) · `app/main.py` (HTTP) · `migrations/` (Alembic).
 Storage is Postgres in Docker (SQLite locally). Vectors are JSON arrays + numpy cosine: fine at ~50 images (pgvector optional).
